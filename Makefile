@@ -23,9 +23,66 @@
 #   proj-devel
 #
 
-# Note:  what's in make.inc would have to be copied here if bluesky
-# kml were moved into it's own repo
-include ../../make.inc
+##
+## copied from make.inc in BSF
+##
+
+# Save the path to make.inc (so we can use relative paths below)
+SRC_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+# Platform tag: appended to builds made from this configuration
+PLATFORM_TAG=-local
+
+#----------------------------------------------------------------------
+# Python compiling options
+#----------------------------------------------------------------------
+PYTHON=/usr/bin/python2.7
+
+#----------------------------------------------------------------------
+# GCC compiling options
+#----------------------------------------------------------------------
+GCC = gcc
+GXX = g++
+GCCFLAGS = -O2 -pipe
+GCC_LDFLAGS = -static
+CC = $(GCC)
+CFLAGS = $(GCCFLAGS)
+
+#----------------------------------------------------------------------
+# Fortran 90 compiling options
+#----------------------------------------------------------------------
+F90 = gfortran
+F77 = gfortran
+FFLAGS = $(GCCFLAGS) -fall-intrinsics -fconvert=big-endian -frecord-marker=4 -ffast-math
+FFLAGS_FREEFORM = -ffree-form -ffree-line-length-none
+LFLAGS = $(GCC_LDFLAGS) -static -lgfortran
+LIB_PGI_LFS =
+
+#----------------------------------------------------------------------
+# C compiling options for C linked with Fortran
+#----------------------------------------------------------------------
+PGCC = $(GCC)
+PGCCFLAGS = $(GCCFLAGS) -DLITTLE -DUNDERSCORE
+
+#----------------------------------------------------------------------
+# Prerequisite libraries
+#----------------------------------------------------------------------
+LIB_M3API = -Bstatic -L$(SRC_ROOT)/lib/ioapi-3.0-install/lib -lioapi -Bdynamic
+INCLUDE_M3API = -I$(SRC_ROOT)/lib/ioapi-3.0/ioapi
+
+LIB_NETCDF = -Bstatic -L$(SRC_ROOT)/lib/netcdf-3.6.3-install/lib -I$(SRC_ROOT)/lib/netcdf-3.6.3-install/include -lnetcdf -Bdynamic
+INCLUDE_NETCDF = -I$(SRC_ROOT)/lib/netcdf-3.6.3-install/include
+
+LIB_GDAL = -Bstatic -L$(SRC_ROOT)/lib/gdal-1.6.0/ -lgdal -lproj -lpthread -lz -Bdynamic
+INCLUDE_GDAL = -I$(SRC_ROOT)/lib/gdal-1.6.0-install/include
+
+LIB_LIBXML = -Bstatic -L/usr/include/libxml2 -lxslt -lxml2 -Bdynamic
+INCLUDE_LIBXML = -I/usr/include/libxml2 -DUSE_LIBXSLT
+
+
+##
+## copied from makepolygons' MAKEFILE in BSF
+##
 
 VERSION=0.1.0
 
